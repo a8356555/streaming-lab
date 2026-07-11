@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+*.egg-info/
+# local runtime artifacts
+_data/
+_catalog.db
+ground_truth*.jsonl
+.DS_Store
