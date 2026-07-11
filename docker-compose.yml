@@ -13,7 +13,8 @@ services:
       - --node-id=0
       - --kafka-addr=INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:19092
       - --advertise-kafka-addr=INTERNAL://redpanda:9092,EXTERNAL://localhost:19092
-      - --set=redpanda.auto_create_topics_enabled=false
+      - --set
+      - redpanda.auto_create_topics_enabled=false
       - --check=false
     ports:
       - "19092:19092"
@@ -39,6 +40,7 @@ services:
       - "19000:9000"
     volumes:
       - ./docker/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./docker/clickhouse/users.xml:/etc/clickhouse-server/users.d/open-networks.xml:ro
     ulimits:
       nofile: {soft: 262144, hard: 262144}
     depends_on:

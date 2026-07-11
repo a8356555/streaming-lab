@@ -63,8 +63,8 @@ def env():
 
 def lake_event_ids_below_t(catalog, cfg: Config, t_ms: int) -> set[str]:
     tbl = catalog.load_table(cfg.orders_identifier)
-    t_dt = datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc)
-    arrow = tbl.scan(row_filter=LessThan("event_time", t_dt)).to_arrow()
+    t_iso = datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc).isoformat()
+    arrow = tbl.scan(row_filter=LessThan("event_time", t_iso)).to_arrow()
     return set(arrow.column("event_id").to_pylist())
 
 

@@ -1,0 +1,41 @@
+name: correctness-suite
+
+# Runs the Phase 1 correctness suite. The heavy integration tests need the
+# docker-compose stack; the watermark unit tests run anywhere.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e . && pip install pytest
+      - run: pytest tests/test_watermark_unit.py -q
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start stack
+        run: |
+          docker compose up -d --build
+          # wait for health
+          for i in $(seq 1 40); do
+            up=$(docker compose ps --format '{{.Health}}' | grep -c healthy || true)
+            [ "$up" -ge 3 ] && break
+            sleep 5
+          done
+          docker compose ps
+      - name: Init + correctness suite
+        run: |
+          docker compose exec -T app python scripts/bootstrap.py
+          docker compose exec -T app pytest -q -p no:warnings
+      - name: Teardown
+        if: always()
+        run: docker compose down -v

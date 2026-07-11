@@ -1,7 +1,7 @@
 # Core / correctness-test path. Pinned; adjust here (and note in phase-1-plan §6)
 # only if a wheel is missing at build time -- never weaken a test to fit a version.
 confluent-kafka==2.5.3
-pyiceberg[s3fs,sql]==0.8.1
+pyiceberg[s3fs,sql-sqlite]==0.8.1
 pyarrow==17.0.0
 clickhouse-connect==0.8.3
 duckdb==1.1.3

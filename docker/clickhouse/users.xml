@@ -1,0 +1,12 @@
+<clickhouse>
+  <!-- Local single-node lab only: the shipped default-user.xml restricts the
+       default user to localhost, which blocks HTTP access from the app container.
+       Open it to the compose network. Not for any non-local deployment. -->
+  <users>
+    <default>
+      <networks replace="replace">
+        <ip>::/0</ip>
+      </networks>
+    </default>
+  </users>
+</clickhouse>

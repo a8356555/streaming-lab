@@ -40,8 +40,8 @@ def read_watermark_t(catalog, cfg: Config = CONFIG) -> int:
 def lake_side(catalog, t_ms: int, cfg: Config = CONFIG) -> tuple[int, Decimal]:
     """Return (count, gmv) for the lake-authoritative side: event_time < T."""
     tbl = catalog.load_table(cfg.orders_identifier)
-    t_dt = datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc)
-    arrow_tbl = tbl.scan(row_filter=LessThan("event_time", t_dt)).to_arrow()
+    t_iso = datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc).isoformat()
+    arrow_tbl = tbl.scan(row_filter=LessThan("event_time", t_iso)).to_arrow()
     con = duckdb.connect()
     con.register("lake_arrow", arrow_tbl)
     row = con.execute(
