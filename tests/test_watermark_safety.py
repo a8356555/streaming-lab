@@ -1,8 +1,17 @@
-"""Correctness test 3: watermark T safety.
+"""Correctness test 3: watermark T safety (steady-state).
 
-Invariant: every event with event_time < T is guaranteed already in the lake.
-We assert set equality of event_ids below T between the independent ground truth
-and the lake -- the lake has all of them, and none extra.
+Scope, stated honestly: this checks the STEADY-STATE property after the landing
+job has fully drained the topic -- the set of events with event_time < T equals
+exactly the set of events with event_time < T in the lake (all present, none
+extra). It is a no-loss-below-T check at rest.
+
+It does NOT exercise the *dynamic* invariant "T never runs ahead of what is
+already landed" under live partition skew / late arrivals -- at full drain the
+lake holds everything, so any T is trivially safe against the lake. The dynamic
+property is currently covered only by the unit tests
+(test_watermark_unit.py, per-partition-min vs global-max), and is scheduled for
+end-to-end coverage by the Phase 2 chaos suite (skew + late injection). See
+ADR-002 open questions.
 """
 from __future__ import annotations
 

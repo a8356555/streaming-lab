@@ -68,6 +68,14 @@ a dedicated late side-path (option H) goes to backlog, considered only if a seam
 consumer drives a money-affecting action where dropped late events are
 unacceptable. This is the first thing to ratify when Phase 2 opens.
 
+**Test coverage gap (tracked):** the Phase 1 `test_watermark_safety` is a
+steady-state check (all events drained → no loss below T). The *dynamic* invariant
+— T never runs ahead of what is already landed under live partition skew and late
+arrivals — is currently covered only by unit tests (per-partition-min vs
+global-max). End-to-end coverage of the dynamic property is deferred to the Phase 2
+chaos suite (skew + late injection), where breaking the ≤ W assumption is the whole
+point. Not implemented now on purpose (scope discipline — it is Phase 2 work).
+
 > TODO(Alan): 發布前用自己的話改寫本段。
 
 ## Reversal trigger

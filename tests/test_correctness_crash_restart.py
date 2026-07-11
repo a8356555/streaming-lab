@@ -73,3 +73,9 @@ def test_crash_restart_no_dup_no_loss(env):
     assert result.lake_count > 0 and result.ch_count > 0
     assert result.count == gt.count
     assert result.gmv == gt.gmv
+
+    # Lake completeness (independent of the seam): the final clean run drained the
+    # topic, so the lake must hold every event including the >=T tail. Without this
+    # a landing job that lost its last batch after the kills would still pass the
+    # seam checks (ClickHouse backfills the >=T side).
+    assert total == gt.count

@@ -11,6 +11,8 @@ from streaming_lab.lake.landing_job import LandingJob
 from streaming_lab.realtime import clickhouse as ch
 from streaming_lab.query.seam import seam_query
 
+from conftest import lake_dup_stats
+
 
 def test_no_dup_no_loss(env):
     cfg = env.cfg
@@ -36,3 +38,11 @@ def test_no_dup_no_loss(env):
     # no loss + no duplication: exact equality on count and (Decimal) GMV.
     assert result.count == gt.count
     assert result.gmv == gt.gmv
+
+    # Lake completeness (independent of the seam): after a full land the lake must
+    # hold EVERY event, including the >=T tail. The seam alone cannot catch a lake
+    # that silently drops its latest batch -- ClickHouse would backfill the >=T
+    # side and the counts would still match. Assert the lake directly.
+    lake_total, lake_distinct = lake_dup_stats(env.catalog, cfg)
+    assert lake_total == lake_distinct  # no duplicate rows in the lake
+    assert lake_total == gt.count       # lake dropped nothing, incl. the >=T tail
