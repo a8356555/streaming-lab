@@ -1,6 +1,6 @@
 # ADR-001: Where do Kafka offsets live — Iceberg snapshot vs external checkpoint
 
-> Status: **PROPOSAL** — decision pending Alan
+> Status: **ACCEPTED** — ratified by Alan 2026-07-11
 > This is the load-bearing decision of the whole repo.
 
 ## Context
@@ -48,13 +48,19 @@ are kept as the Phase 2 antagonists to *measure* how they fail.
 
 ## Decision
 
-> TODO(Alan): confirm A, in your own words, and state the one sentence you'd give
-> an interviewer for "why not just commit the consumer-group offset?"
+**Option A — offsets in the Iceberg snapshot summary** (ratified by Alan 2026-07-11).
+
+- Progress and data in one transaction *is* the thesis of the whole repo; anything
+  that splits them is the bug the lab exists to expose.
+- An external checkpoint store reintroduces a dual-write between the store and the
+  lake — the exact store↔lake divergence window we are trying to close, just moved.
+- The consumer-group offset (option C) is a different system from the Iceberg
+  commit and can never be atomic with the data.
 
 ## Reversal trigger
 
-Move to a REST/JDBC catalog (still option A, offsets-in-snapshot) when more than
-one landing writer is needed or SqlCatalog's single-writer commit becomes a
-bottleneck. Reconsider B only if a downstream system must read offsets without
-Iceberg access — and even then, derive it from the snapshot, never write it
-independently.
+Revisit only when multiple sinks must coordinate progress (then move to a REST/JDBC
+catalog, still offset-in-snapshot). Never adopt an independently-written external
+store; if a downstream needs offsets, derive them from the snapshot.
+
+> TODO(Alan): 發布前用自己的話改寫本段。

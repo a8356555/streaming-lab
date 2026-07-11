@@ -1,6 +1,6 @@
 # ADR-000: Repo name
 
-> Status: **PROPOSAL** — decision pending Alan
+> Status: **ACCEPTED** — ratified by Alan 2026-07-11
 > Format: options → recommendation → rejected-why → reversal trigger
 
 ## Context
@@ -25,8 +25,12 @@ the name is low-stakes and reversible (GitHub redirects on rename).
 
 ## Decision
 
-> TODO(Alan): pick the name. If renaming, do it before the first public writeup
-> links to the repo. Record the reason here in your own words.
+**`streaming-lab`** (ratified by Alan 2026-07-11).
+
+Alan's reasoning: keep the broader scope. The name should not bind the repo to the
+correctness/exactly-once topic alone — it may grow to hold other streaming subjects
+later, and a wider name leaves that room. The "exactly-once" framing lives in the
+README thesis and ADR-001, so the repo name does not need to carry it.
 
 ## Reversal trigger
 

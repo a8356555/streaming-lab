@@ -1,6 +1,6 @@
 # ADR-002: Watermark T strategy — lateness window, idle partitions, rollback
 
-> Status: **PROPOSAL** — decision pending Alan
+> Status: **ACCEPTED** — ratified by Alan 2026-07-11
 
 ## Context
 
@@ -51,9 +51,24 @@ motivating **E** (idle timeout) and **H** (late side-path) as measured upgrades.
 
 ## Decision
 
-> TODO(Alan): confirm the Phase 1 default, and decide the Phase 2 policy for late
-> events (F visualize-only vs H side-path). State why T must stay monotonic (why G
-> is off the table) in your own words.
+**Phase 1 default A + D + F** — static window W, per-partition min, hold on idle,
+and let an assumption-violation be a visible failure (ratified by Alan 2026-07-11).
+
+- Per-partition min is the correct watermark, not `max - W`: the repo's own unit
+  test (`test_watermark_unit.py::test_min_across_partitions_not_max`) demonstrates
+  that a global max drops data when partitions drain unevenly.
+- Static W keeps the safety property provable for the walking skeleton; Phase 2
+  breaks the ≤ W assumption on purpose to measure the seam loss.
+
+### Open questions (for Phase 2 kickoff)
+
+Late-event policy is deferred to Phase 2, with a recorded leaning (Alan): first
+make the failure **visible** (option F), then implement **T rollback as the fix**;
+a dedicated late side-path (option H) goes to backlog, considered only if a seam
+consumer drives a money-affecting action where dropped late events are
+unacceptable. This is the first thing to ratify when Phase 2 opens.
+
+> TODO(Alan): 發布前用自己的話改寫本段。
 
 ## Reversal trigger
 

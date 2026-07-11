@@ -1,6 +1,6 @@
 # ADR-004: Landing job — pure-Python micro-batch consumer vs Flink/Connect/Spark
 
-> Status: **PROPOSAL** — decision pending Alan
+> Status: **ACCEPTED** — ratified by Alan 2026-07-11
 
 ## Context
 
@@ -28,12 +28,22 @@ internally" — earned by having built it.
 
 ## Decision
 
-> TODO(Alan): confirm A for the lab. In your own words: what does Flink's Iceberg
-> sink give you that this hand-rolled job does not (stateful windows, backpressure,
-> rescaling), and when would you actually reach for it in production?
+**Option A — pure-Python micro-batch consumer + pyiceberg** (ratified by Alan 2026-07-11).
+
+- The repo's purpose is to *expose* the exactly-once mechanism; Flink is exactly the
+  tool that hides it inside a sink. Hand-rolling ~120 lines makes the mechanism the
+  readable feature, not a black box.
+- The README earns the line "this is what Flink's / Kafka Connect's Iceberg sink
+  does internally" precisely by having built it.
+
+> TODO(Alan): 發布前用自己的話改寫本段。
 
 ## Reversal trigger
 
 Reach for D (Flink) the moment the workload needs real stateful streaming
 (event-time windows, dual-stream joins, CEP) rather than append-and-commit; reach
 for B (Kafka Connect) if the goal shifts from "demonstrate" to "operate cheaply".
+
+Special case — Phase 4 throughput: if the single-threaded Python landing job hits a
+GIL/throughput ceiling, **that wall is itself a finding** (measure and report it);
+a Flink comparison goes to backlog, not a rewrite of this decision.
