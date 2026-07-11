@@ -1,0 +1,8 @@
+# Optional HTTP ingest gateway (reused from the 2023 system-design repo).
+# NOT on the Phase 1 correctness path; kept for the Phase 3 load test.
+fastapi
+uvicorn[standard]
+aiokafka
+orjson
+structlog
+prometheus-client
